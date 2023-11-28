@@ -3,6 +3,64 @@ const database = require("../database");
 
 const app = require("../src/app");
 
+describe("POST /api/movies", () => {
+  it("should return created movie", async () => {
+    const newMovie = {
+      title: "Star Wars",
+      director: "George Lucas",
+      year: "1977",
+      color: "1",
+      duration: 120,
+    };
+
+    const response = await request(app).post("/api/movies").send(newMovie);
+    console.log("header:", response.headers);
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.status).toEqual(201);
+    expect(response.body).toHaveProperty("id");
+    expect(typeof response.body.id).toBe("number");
+
+    const [result] = await database.query(
+      "SELECT * FROM movies WHERE id=?",
+      response.body.id
+    );
+
+    const [movieInDatabase] = result;
+
+    expect(movieInDatabase).toHaveProperty("id");
+
+    expect(movieInDatabase).toHaveProperty("title");
+    expect(movieInDatabase.title).toStrictEqual(newMovie.title);
+    expect(typeof movieInDatabase.title).toBe("string");
+
+    expect(movieInDatabase).toHaveProperty("director");
+    expect(movieInDatabase.director).toStrictEqual(newMovie.director);
+    expect(typeof movieInDatabase.director).toBe("string");
+
+    expect(movieInDatabase).toHaveProperty("year");
+    expect(movieInDatabase.year).toStrictEqual(newMovie.year);
+    expect(typeof movieInDatabase.year).toBe("string");
+
+    expect(movieInDatabase).toHaveProperty("color");
+    expect(movieInDatabase.color).toStrictEqual(newMovie.color);
+    expect(typeof movieInDatabase.color).toBe("string");
+
+    expect(movieInDatabase).toHaveProperty("duration");
+    expect(movieInDatabase.duration).toStrictEqual(newMovie.duration);
+    expect(typeof movieInDatabase.duration).toBe("number");
+  });
+
+  it("should return an error", async () => {
+    const movieWithMissingProps = {
+      title: "Harry Potter",
+    };
+    const response = await request(app)
+      .post("/api/movies")
+      .send(movieWithMissingProps);
+    expect(response.status).toEqual(500);
+  });
+});
+
 describe("GET /api/movies", () => {
   it("should return all movies", async () => {
     const response = await request(app).get("/api/movies");
@@ -16,12 +74,9 @@ describe("GET /api/movies", () => {
 describe("GET /api/movies/:id", () => {
   it("should return one movie", async () => {
     const response = await request(app).get("/api/movies/1");
-
     expect(response.headers["content-type"]).toMatch(/json/);
-
     expect(response.status).toEqual(200);
   });
-
   it("should return no movie", async () => {
     const response = await request(app).get("/api/movies/0");
 

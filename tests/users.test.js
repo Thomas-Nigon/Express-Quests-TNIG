@@ -1,4 +1,5 @@
 const request = require("supertest");
+const database = require("../database");
 
 const app = require("../src/app");
 
@@ -27,3 +28,5 @@ describe("GET /api/users/:id", () => {
     expect(response.status).toEqual(404);
   });
 });
+
+afterAll(() => database.end());

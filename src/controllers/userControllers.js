@@ -53,8 +53,8 @@ const updateUser = (req, res) => {
   const { firstname, lastname, email, city, language } = req.body;
   database
     .query(
-      "INSERT INTO users(firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)",
-      [firstname, lastname, email, city, language]
+      "UPDATE users set firstname = ?, lastname = ?, email = ?, city = ?, language= ? WHERE id = ?",
+      [firstname, lastname, email, city, language, id]
     )
     .then(([result]) => {
       if (result.affectedRows === 0) {
@@ -68,6 +68,7 @@ const updateUser = (req, res) => {
       res.sendStatus(500);
     });
 };
+
 module.exports = {
   getUsers,
   getUserById,

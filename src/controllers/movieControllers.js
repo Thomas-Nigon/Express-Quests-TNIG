@@ -1,3 +1,4 @@
+require("dotenv").config();
 const movies = [
   {
     id: 1,
@@ -91,9 +92,48 @@ const getUserById = (req, res) => {
     });
 };
 
+// in src/controllers/movieControllers.js
+
+const postMovie = (req, res) => {
+  const { title, director, year, color, duration } = req.body;
+  console.log("body:", req.body);
+  database
+    .query(
+      "INSERT INTO movies(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+      [title, director, year, color, duration]
+    )
+    .then(([result]) => {
+      res.status(201).send({ id: result.insertId });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+  res.send("Post route is working 🎉");
+};
+
+const postUser = (req, res) => {
+  const { firstname, lastname, email, city, language } = req.body;
+  console.log("body:", req.body);
+  database
+    .query(
+      "INSERT INTO users(firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)",
+      [firstname, lastname, email, city, language]
+    )
+    .then(([result]) => {
+      res.status(201).send({ id: result.insertId });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+  res.send("Post route is working 🎉");
+};
 module.exports = {
   getMovies,
   getMovieById,
   getUsers,
   getUserById,
+  postMovie,
+  postUser,
 };

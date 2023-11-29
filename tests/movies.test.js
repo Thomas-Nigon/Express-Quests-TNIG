@@ -171,4 +171,34 @@ describe("PUT /api/movies/:id", () => {
   });
 });
 
+describe("DELETE /api/movies/:id", () => {
+  it("should create a movie", async () => {
+    const newMovie = {
+      title: "Dummy",
+      director: "Movie",
+      year: "1900",
+      color: "1",
+      duration: "200",
+    };
+
+    const [result] = await database.query(
+      "INSERT INTO movies (title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
+      [
+        newMovie.title,
+        newMovie.director,
+        newMovie.year,
+        newMovie.color,
+        newMovie.duration,
+      ]
+    );
+
+    const id = result.insertId;
+    const response = await request(app).delete(`/api/movies/${id}`);
+    expect(response.status).toEqual(204);
+
+    const checkMovie = await request(app).get(`/api/movies/${id}`);
+    expect(checkMovie.status).toEqual(404);
+  });
+});
+
 afterAll(() => database.end());

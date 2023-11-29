@@ -41,7 +41,6 @@ describe("POST /api/users", () => {
     };
 
     const response = await request(app).post("/api/users").send(newUser);
-    console.log("header:", response.headers);
     expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.status).toEqual(201);
     expect(response.body).toHaveProperty("id");
@@ -169,6 +168,36 @@ describe("PUT /api/users/:id", () => {
     const response = await request(app).put("/api/users/0").send(newUser);
 
     expect(response.status).toEqual(404);
+  });
+});
+
+describe("DELETE /api/users/:id", () => {
+  it("should create a user", async () => {
+    const newUser = {
+      firstname: "Dummy",
+      lastname: "User",
+      email: `${crypto.randomUUID()}@wild.co`,
+      city: "Lille",
+      language: "French",
+    };
+
+    const [result] = await database.query(
+      "INSERT INTO users (firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)",
+      [
+        newUser.firstname,
+        newUser.lastname,
+        newUser.email,
+        newUser.city,
+        newUser.language,
+      ]
+    );
+
+    const id = result.insertId;
+    const response = await request(app).delete(`/api/users/${id}`);
+    expect(response.status).toEqual(204);
+
+    const checkUser = await request(app).get(`/api/users/${id}`);
+    expect(checkUser.status).toEqual(404);
   });
 });
 

@@ -51,7 +51,7 @@ const updateMovie = (req, res) => {
   const { title, director, year, color, duration } = req.body;
   database
     .query(
-      "update movies set title = ?, director = ?, year = ?, color = ?, duration = ? where id = ?",
+      "UPDATE movies SET title = ?, director = ?, year = ?, color = ?, duration = ? where id = ?",
       [title, director, year, color, duration, id]
     )
     .then(([result]) => {

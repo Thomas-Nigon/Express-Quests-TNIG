@@ -84,7 +84,7 @@ describe("POST /api/users", () => {
     const response = await request(app)
       .post("/api/users")
       .send(userWithMissingProps);
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(422);
   });
 });
 
@@ -154,7 +154,7 @@ describe("PUT /api/users/:id", () => {
       .put(`/api/users/1`)
       .send(userWithMissingProps);
 
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(422);
   });
 
   it("should return no user", async () => {
@@ -166,7 +166,7 @@ describe("PUT /api/users/:id", () => {
       language: "English",
     };
 
-    const response = await request(app).put("/api/movies/0").send(newUser);
+    const response = await request(app).put("/api/users/0").send(newUser);
 
     expect(response.status).toEqual(404);
   });
